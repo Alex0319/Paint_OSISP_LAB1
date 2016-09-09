@@ -30,7 +30,31 @@
     <ClInclude Include="Paint.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
+    <ClInclude Include="Line.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Ellipse.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Polygon.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Rectangle.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="LineFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="EllipseFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="RectangleFactory.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,12 +65,36 @@
     <ClCompile Include="Paint.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Ellipse.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Polygon.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Rectangle.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="LineFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="EllipseFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="RectangleFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Paint.rc">
-      <Filter>Файлы ресурсов</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="Resource.rc">
       <Filter>Файлы ресурсов</Filter>
     </ResourceCompile>
   </ItemGroup>
@@ -54,13 +102,31 @@
     <Image Include="..\..\..\..\..\..\Изображения\paint.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-    <Image Include="Pen.ico">
+    <Image Include="Paint.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Rectangle.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Ellipse.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Polygon.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="Line.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-    <Image Include="Paint.ico">
+    <Image Include="Pen.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Text.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Paintcan.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="ChooseColor.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

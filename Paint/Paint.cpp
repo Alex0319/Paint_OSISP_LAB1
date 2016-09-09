@@ -18,8 +18,9 @@ TCHAR szChildClass[] = _T("WinChild");
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK    WndChildProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void CreateNewShape(ShapeFactory*);
+void ClearWindow();
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -58,8 +59,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	return (int) msg.wParam;
 }
 
-
-
 //
 //  ФУНКЦИЯ: MyRegisterClass()
 //
@@ -78,25 +77,11 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hInstance		= hInstance;
 	wcex.hIcon			= LoadIcon(hInstance, MAKEINTRESOURCE(IDI_PAINT));
 	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
+	wcex.hbrBackground	= NULL;
 	wcex.lpszMenuName	= MAKEINTRESOURCE(IDC_MAINMENU);
 	wcex.lpszClassName	= szWindowClass;
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_PAINT));
 
-	return RegisterClassEx(&wcex);
-}
-
-ATOM MyRegisterChildClass(HINSTANCE hInstance)
-{
-	WNDCLASSEX wcex ;
-	memset(&wcex, 0, sizeof(WNDCLASSEX));
-	wcex.cbSize = sizeof(WNDCLASSEX);
-
-	wcex.lpfnWndProc = WndChildProc;
-	wcex.hInstance = hInstance;
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszClassName = szChildClass;
 	return RegisterClassEx(&wcex);
 }
 
@@ -120,10 +105,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
-   {
       return FALSE;
-   }
-
+ 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -144,14 +127,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 {
 	const int ImageListID = 0;
-	const int numButtons = 2;
+	const int numButtons = 8;
 	const int iconSize = 16;
 
-	const DWORD buttonStyles = BTNS_AUTOSIZE;
+	DWORD buttonStyles = BTNS_AUTOSIZE;
 
 	// Create the toolbar.
 	HWND hWndTB = CreateWindowEx(0, TOOLBARCLASSNAME, NULL,
-		WS_CHILD | TBSTYLE_TOOLTIPS|CCS_TOP|WS_EX_CLIENTEDGE , 0, 0, 0, 0,
+		WS_CHILD | CCS_TOP| TBSTYLE_FLAT|TBSTYLE_WRAPABLE , 0, 0, 0, 0,
 		parent, NULL, hInst, NULL);
 	if (hWndTB == NULL)
 		return NULL;
@@ -160,9 +143,8 @@ HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 	HIMAGELIST hImgl = ImageList_Create(iconSize, iconSize,   // Dimensions of individual bitmaps.
 		ILC_COLOR32 | ILC_MASK,   // Ensures transparent background.
 		numButtons, 0);
-
-	ImageList_AddIcon(hImgl, LoadIcon(hInst,MAKEINTRESOURCE(IDI_PENICON)));
-	ImageList_AddIcon(hImgl, LoadIcon(hInst,MAKEINTRESOURCE(IDI_LINEICON)));
+	for (int i = 0; i < numButtons; i++)
+		ImageList_AddIcon(hImgl, LoadIcon(hInst,MAKEINTRESOURCE(IDI_PENICON+i)));
 
 	// Set the image list.
 	SendMessage(hWndTB, TB_SETIMAGELIST,(WPARAM)ImageListID,(LPARAM)hImgl);
@@ -174,13 +156,14 @@ HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 	// IDM_NEW, IDM_OPEN, and IDM_SAVE are application-defined command constants.
 
 	TBBUTTON tbButtons[numButtons];
-	for (int i = 0; i < 2; i++)
+	std::vector<std::string> buttonsText = {"Карандаш","Линия","Прямоугольник","Эллипс","Многоугольник","Текст","Заливка","Изменение цветов"};
+	for (int i = 0; i < numButtons; i++)
 	{
 		tbButtons[i].iBitmap = i;
 		tbButtons[i].fsStyle = buttonStyles;
 		tbButtons[i].fsState = TBSTATE_ENABLED;
-		tbButtons[i].iString = NULL;
-		tbButtons->idCommand = 0;
+		tbButtons[i].iString = (INT_PTR)buttonsText[i].data();
+		tbButtons[i].idCommand = IDM_PEN+i;
 	}
 	// Add buttons.
 	SendMessage(hWndTB, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
@@ -188,20 +171,28 @@ HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 
 	// Resize the toolbar, and then show it.
 	SendMessage(hWndTB, TB_AUTOSIZE, 0, 0);
+	ShowWindow(hWndTB, SW_SHOW);
 	return hWndTB;
 }
 
-
-static HWND hWndChild;
+COLORREF stdColor = RGB(255,255,255);
+Shape* currentShape;
+ShapeFactory* currentFactory;
+std::vector<Shape*> shapes;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int wmId, wmEvent,y,k;
+	int wmId, wmEvent,k;
+	static POINTS startPoint,endPoint;
+	static HPEN hPen;
+	static CHOOSECOLOR ccs;
+	static HBRUSH hBrush;
+	static COLORREF acrCustColor[16];
 	PAINTSTRUCT ps;
 	HDC hdc, hdcEMF=NULL;
 	static HENHMETAFILE hmf;
-	static int sx, sy,iVscrollPos,iHscrollPos,sizeToolbar;
-	static HWND hWndToolBar,hWndToolTip;
+	static int sx, sy, currentShapeId=0,iVscrollPos, iHscrollPos, sizeToolbar;
+	static HWND hWndToolBar;
 	RECT rt;
 	static TOOLINFO ti;
 	static LOGFONT lf;
@@ -211,7 +202,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static OPENFILENAME file;
 	std::ifstream in;
 	std::ofstream out;
-	static std::vector<std::string> v;
+	static std::map <int, ShapeFactory*> shapeFactoryMap = { { IDM_LINE, new LineFactory }, { IDM_ELLIPSE, new EllipseFactory }, { IDM_RECTANGLE, new RectangleFactory } };
 	std::vector <std::string>::iterator it;
 	std::string st;
 	switch (message)
@@ -220,15 +211,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			file.lStructSize = sizeof(OPENFILENAME);
 			file.hwndOwner = hWnd;
 			file.hInstance = hInst;
-			file.lpstrFilter = _T("Metafile\0*.wmf");
+			file.lpstrFilter = _T("Metafile\0*.emf");
 			file.lpstrFile = name;
 			file.nMaxFile = 256;
 			file.lpstrInitialDir = _T(".\\");
-			file.lpstrDefExt = _T("wmf");
+			file.lpstrDefExt = _T("emf");
 			hWndToolBar = CreateToolBar(hWnd, hInst);
-			MyRegisterChildClass(hInst);
-			hWndChild = CreateWindow(szChildClass,NULL,WS_CHILD|WS_VISIBLE|WS_BORDER|WS_SIZEBOX,CW_USEDEFAULT,0,CW_USEDEFAULT,0,hWnd,NULL,hInst,NULL);
 			hdcEMF = CreateEnhMetaFile(NULL, NULL, NULL, NULL);
+			hPen = CreatePen(PS_SOLID, 3, RGB(120, 0, 0));
+			
+			ccs.lStructSize = sizeof(CHOOSECOLOR);
+			ccs.hwndOwner = hWnd;
+			ccs.rgbResult = stdColor;
+			ccs.Flags =NULL;
+			ccs.lpCustColors = (LPDWORD)acrCustColor;
 			/*			cf.lStructSize = sizeof(CHOOSEFONT);
 			cf.Flags = CF_EFFECTS | CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
 			cf.hwndOwner = hWnd;
@@ -245,14 +241,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;*/
 		case WM_SIZE:
-			SendMessage(hWndToolBar, TB_AUTOSIZE, 0, 0);
 			if (wParam == SIZE_MINIMIZED)
 				break;
 			sx = LOWORD(lParam);
 			sy = HIWORD(lParam);
-			MoveWindow(hWndChild, 20, GetSystemMetrics(SM_CYMENU) + GetSystemMetrics(SM_CYCAPTION), sx - 40, sy - 40, TRUE);
-			ShowWindow(hWndChild, SW_SHOW);
-			UpdateWindow(hWndChild);
 			break;
 		case WM_COMMAND:
 			wmId    = LOWORD(wParam);
@@ -260,11 +252,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Разобрать выбор в меню:
 			switch (wmId)
 			{
-			case IDM_MAIN:	ShowWindow(hWndToolBar, SW_SHOW);
-					break;
 				case IDM_FILENEW:
-					if (!v.empty())
-						std::vector<std::string>().swap(v);
+					ClearWindow();
 					InvalidateRect(hWnd,NULL,TRUE);
 					break;
 				case IDM_FILEOPEN:
@@ -273,27 +262,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					if (!GetOpenFileName(&file))
 						return 1;
 					in.open(name);
-					while (getline(in, st))
-						v.push_back(st);
+//					while (getline(in, st))
+//						v.push_back(st);
 					in.close();
 					InvalidateRect(hWnd, NULL, 1);
 					break;
 				case IDM_FILESAVE:
-				{
-					 file.lpstrTitle = _T("Открыть файл для записи");
-					 file.Flags = OFN_OVERWRITEPROMPT;
-					 if (!GetSaveFileName(&file))
-						 return 1;
-					 HDC tempHdcEmf = CreateMetaFile(name);
-					 memcpy_s(tempHdcEmf, sizeof(HDC), hdcEMF, sizeof(HDC));
-					 HENHMETAFILE tempHmf = CloseEnhMetaFile(tempHdcEmf);
-					 DeleteEnhMetaFile(tempHmf);
-					 /*					out.open(name);
-					 for (it = v.begin(); it != v.end(); it++)
-					 out << *it << '\n';
-					 out.close();*/
-				}
-				break;
+					{
+						 file.lpstrTitle = _T("Открыть файл для записи");
+						 file.Flags = OFN_OVERWRITEPROMPT;
+						 if (!GetSaveFileName(&file))
+							 return 1;
+						 HDC tempHdcEmf = CreateMetaFile(name);
+						 memcpy_s(tempHdcEmf, sizeof(HDC), hdcEMF, sizeof(HDC));
+						 HENHMETAFILE tempHmf = CloseEnhMetaFile(tempHdcEmf);
+						 DeleteEnhMetaFile(tempHmf);
+						 /*					out.open(name);
+						 for (it = v.begin(); it != v.end(); it++)
+						 out << *it << '\n';
+						 out.close();*/
+					}
+					break;
+				case IDM_PEN:
+				case IDM_LINE: 
+				case IDM_ELLIPSE:
+				case IDM_RECTANGLE:
+				case IDM_POLYGON:
+				case IDM_TEXT:currentShapeId = wmId;
+					break;
+				case IDM_CHOOSECOLOR:
+					if (ChooseColor(&ccs))
+					{
+						stdColor = ccs.rgbResult;
+						if (hBrush)
+							DeleteObject(hBrush);
+						hBrush = CreateSolidBrush(stdColor);
+					}
+					break;
 				case IDM_ABOUT: DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 					break;
 				case IDM_EXIT:DestroyWindow(hWnd);
@@ -301,13 +306,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				default: return DefWindowProc(hWnd, message, wParam, lParam);
 			}
 			break;
-		case WM_PAINT:
-			hdc = BeginPaint(hWnd, &ps);
-			for (y = 20 , it = v.begin(); it < v.end(); it++, y += 16)
-				TabbedTextOutA(hdc, 0, y, it->data(), it->length(), 0, NULL, 0);
-			// TODO: добавьте любой код отрисовки...
-			EndPaint(hWnd, &ps);
+		case WM_LBUTTONDOWN:
+			if (currentShapeId != 0)
+			{
+				startPoint =MAKEPOINTS(lParam);
+				CreateNewShape(shapeFactoryMap.find(currentShapeId)->second);
+				currentShape->SetPoint(startPoint);
+				currentShape->SetPoint(startPoint);
+			}
 			break;
+		case WM_MOUSEMOVE:
+			if (wParam == MK_LBUTTON && currentShapeId!=0)
+			{
+				endPoint = MAKEPOINTS(lParam);
+				currentShape->SetPoint(endPoint);
+				InvalidateRect(hWnd, NULL, FALSE);
+			}
+			break;
+		case WM_LBUTTONUP:	
+			break;
+		case WM_PAINT:
+		{
+            if (currentShape != NULL)
+			{
+				int clientRectTop = GetSystemMetrics(SM_CYMENU) + GetSystemMetrics(SM_CYCAPTION);
+				GetClientRect(hWnd, &rt);
+				hdc = GetDC(hWnd);
+				HDC hdc2 = CreateCompatibleDC(hdc);
+				HBITMAP hbm = CreateCompatibleBitmap(hdc, sx, sy);
+				HANDLE hold = SelectObject(hdc2, hbm);
+				SelectObject(hdc2, hPen);
+				FillRect(hdc2, &rt, (HBRUSH)WHITE_BRUSH);
+				if (!shapes.empty())
+					for (int i = 0; i < shapes.size(); i++)
+						shapes[i]->Draw(hdc2, hPen);
+				BitBlt(hdc, 0, clientRectTop, sx, sy - clientRectTop, hdc2, 0, clientRectTop, SRCCOPY);
+				SelectObject(hdc2, hold);
+				ReleaseDC(hWnd,hdc);
+				DeleteObject(hbm);
+				DeleteDC(hdc2);
+;				rt.top= clientRectTop;
+				ValidateRect(hWnd,&rt);
+			}
+		}
+		break;
 		case WM_DESTROY:
 			DeleteEnhMetaFile(hmf);
 			PostQuitMessage(0);
@@ -317,10 +359,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-LRESULT CALLBACK WndChildProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+void ClearWindow()
 {
+	for (int i = 0; i < shapes.size(); i++)
+		delete shapes[i];
+	if (!shapes.empty())
+		std::vector<Shape*>().swap(shapes);
+}
 
-	return 0;
+void CreateNewShape(ShapeFactory* shapeFactory)
+{
+	currentShape = shapeFactory->CreateShape();
+	currentFactory = shapeFactory;
+	shapes.push_back(currentShape);
 }
 
 // Обработчик сообщений для окна "О программе".

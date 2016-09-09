@@ -23,7 +23,20 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <map>
 
+#ifndef __shapemodule_h__
+#define __shapemodule_h__
+#include "Shape.h"
+#include "Line.h"
+#include "Ellipse.h"
+#include "Rectangle.h"
+#include "Polygon.h"
+#include "ShapeFactory.h"
+#include "LineFactory.h"
+#include "EllipseFactory.h"
+#include "RectangleFactory.h"
+#endif
 
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы
