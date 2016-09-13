@@ -9,7 +9,7 @@ EllipseFactory::~EllipseFactory()
 {
 }
 
-Shape* EllipseFactory::CreateShape()
+Shape* EllipseFactory::CreateShape(COLORREF color, int weight, COLORREF brushColor)
 {
-	return new EllipseShape();
+	return new EllipseShape(color,weight,brushColor);
 }

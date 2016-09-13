@@ -4,24 +4,25 @@ EllipseShape::EllipseShape()
 {
 }
 
+EllipseShape::EllipseShape(COLORREF color, int weight, COLORREF brushColor) :Shape(color, weight,brushColor)
+{
+}
 
 EllipseShape::~EllipseShape()
 {
 }
 
-void EllipseShape::Draw(HDC hdcPointer,HPEN pen)
+void EllipseShape::Draw(HDC hdc,int weight)
 {
-	if (hPen == NULL)
-		hPen = pen;
-	SelectObject(hdcPointer, hPen);
-	Ellipse(hdcPointer,startPoint.x,startPoint.y,endPoint.x,endPoint.y);
-	SelectObject(hdcPointer, pen);
+	SelectObject(hdc, hBrush);
+	SelectObject(hdc, hPen);
+	Ellipse(hdc,startPoint.x,startPoint.y,endPoint.x,endPoint.y);
 }
 
 void EllipseShape::SetPoint(POINTS point)
 {
 	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint = point;
+		startPoint =endPoint= point;
 	else
 		endPoint = point;
 }

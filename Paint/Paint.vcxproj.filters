@@ -57,6 +57,30 @@
     <ClInclude Include="RectangleFactory.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="PolygonFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonLine.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonLineFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Pen.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="PenFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="TextFactory.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="FileName.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -92,6 +116,30 @@
     <ClCompile Include="RectangleFactory.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="PolygonFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonLine.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonLineFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Pen.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="PenFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="TextFactory.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="FileName.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Paint.rc">
@@ -111,9 +159,6 @@
     <Image Include="Ellipse.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-    <Image Include="Polygon.ico">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
     <Image Include="Line.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
@@ -127,6 +172,15 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="ChooseColor.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="PolygonLine.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Polygon.ico">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="weight.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>

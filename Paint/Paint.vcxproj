@@ -82,10 +82,16 @@
   <ItemGroup>
     <ClInclude Include="Ellipse.h" />
     <ClInclude Include="EllipseFactory.h" />
+    <ClInclude Include="FileName.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="LineFactory.h" />
     <ClInclude Include="Paint.h" />
+    <ClInclude Include="Pen.h" />
+    <ClInclude Include="PenFactory.h" />
     <ClInclude Include="Polygon.h" />
+    <ClInclude Include="PolygonFactory.h" />
+    <ClInclude Include="PolygonLine.h" />
+    <ClInclude Include="PolygonLineFactory.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="RectangleFactory.h" />
     <ClInclude Include="Resource.h" />
@@ -93,14 +99,22 @@
     <ClInclude Include="ShapeFactory.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="TextFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ellipse.cpp" />
     <ClCompile Include="EllipseFactory.cpp" />
+    <ClCompile Include="FileName.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="LineFactory.cpp" />
     <ClCompile Include="Paint.cpp" />
+    <ClCompile Include="Pen.cpp" />
+    <ClCompile Include="PenFactory.cpp" />
     <ClCompile Include="Polygon.cpp" />
+    <ClCompile Include="PolygonFactory.cpp" />
+    <ClCompile Include="PolygonLine.cpp" />
+    <ClCompile Include="PolygonLineFactory.cpp" />
     <ClCompile Include="Rectangle.cpp" />
     <ClCompile Include="RectangleFactory.cpp" />
     <ClCompile Include="Shape.cpp" />
@@ -109,6 +123,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Paint.rc" />
@@ -122,8 +138,10 @@
     <Image Include="Paintcan.ico" />
     <Image Include="Pen.ico" />
     <Image Include="Polygon.ico" />
+    <Image Include="PolygonLine.ico" />
     <Image Include="Rectangle.ico" />
     <Image Include="Text.ico" />
+    <Image Include="weight.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,6 +5,6 @@ class RectangleFactory :	public ShapeFactory
 public:
 	RectangleFactory();
 	~RectangleFactory();
-	Shape* CreateShape();
+	Shape* CreateShape(COLORREF,int,COLORREF);
 };
 

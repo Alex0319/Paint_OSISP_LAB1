@@ -6,5 +6,5 @@ class EllipseFactory :	public ShapeFactory
 public:
 	EllipseFactory();
 	~EllipseFactory();
-	Shape* CreateShape();
+	Shape* CreateShape(COLORREF,int,COLORREF);
 };

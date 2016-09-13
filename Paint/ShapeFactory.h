@@ -5,6 +5,6 @@ class ShapeFactory
 public:
 	ShapeFactory();
 	~ShapeFactory();
-	virtual Shape* CreateShape() = 0;
+	virtual Shape* CreateShape(COLORREF,int,COLORREF) = 0;
 };
 

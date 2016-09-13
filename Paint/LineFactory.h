@@ -5,6 +5,6 @@ class LineFactory :public ShapeFactory
 public:
 	LineFactory();
 	~LineFactory();
-	Shape* CreateShape();
+	Shape* CreateShape(COLORREF,int,COLORREF);
 };
 

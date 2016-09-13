@@ -9,7 +9,7 @@ LineFactory::~LineFactory()
 {
 }
 
-Shape* LineFactory::CreateShape()
+Shape* LineFactory::CreateShape(COLORREF color, int weight, COLORREF brushColor)
 {
-	return new Line();
+	return new Line(color, weight,brushColor);
 }

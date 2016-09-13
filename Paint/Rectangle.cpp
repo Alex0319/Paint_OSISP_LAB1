@@ -4,26 +4,25 @@ RectangleShape::RectangleShape()
 {
 }
 
+RectangleShape::RectangleShape(COLORREF color, int weight, COLORREF brushColor) :Shape(color, weight,brushColor)
+{
+}
 
 RectangleShape::~RectangleShape()
 {
 }
 
-void RectangleShape::Draw(HDC hdcPointer, HPEN pen)
+void RectangleShape::Draw(HDC hdc,int weight)
 {
-	if (hPen == NULL)
-		hPen = pen;
-	SelectObject(hdcPointer, hPen);
-
-	Rectangle(hdcPointer, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-	SelectObject(hdcPointer, pen);
+	SelectObject(hdc,hPen);
+	SelectObject(hdc, hBrush);
+	Rectangle(hdc, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
 }
 
 void RectangleShape::SetPoint(POINTS point)
 {
 	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint = point;
+		startPoint =endPoint= point;
 	else
 		endPoint = point;
 }
-

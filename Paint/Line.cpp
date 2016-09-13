@@ -4,25 +4,25 @@ Line::Line()
 {
 }
 
+Line::Line(COLORREF color, int weight, COLORREF brushColor) :Shape(color, weight,brushColor)
+{
+}
 
 Line::~Line()
 {
 }
 
-void Line::Draw(HDC hdcPointer,HPEN pen)
+void Line::Draw(HDC hdc, int weight)
 {
-	if (hPen == NULL)
-		hPen = pen;
-	SelectObject(hdcPointer, hPen);
-	MoveToEx(hdcPointer, startPoint.x, startPoint.y, NULL);
-	LineTo(hdcPointer, endPoint.x, endPoint.y);
-	SelectObject(hdcPointer, pen);
+	SelectObject(hdc, hPen);
+	MoveToEx(hdc, startPoint.x, startPoint.y, NULL);
+	LineTo(hdc, endPoint.x, endPoint.y);
 }
 
 void Line::SetPoint(POINTS point)
 {
 	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint = point;
+		startPoint =endPoint= point;
 	else
 		endPoint = point;
 }

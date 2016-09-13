@@ -9,7 +9,7 @@ RectangleFactory::~RectangleFactory()
 {
 }
 
-Shape* RectangleFactory::CreateShape()
+Shape* RectangleFactory::CreateShape(COLORREF color, int weight, COLORREF brushColor)
 {
-	return new RectangleShape();
+	return new RectangleShape(color, weight, brushColor);
 }

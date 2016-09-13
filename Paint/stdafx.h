@@ -32,10 +32,19 @@
 #include "Ellipse.h"
 #include "Rectangle.h"
 #include "Polygon.h"
+#include "PolygonLine.h"
+#include "Text.h"
+#include "Pen.h"
+#include "FileName.h"
+
 #include "ShapeFactory.h"
+#include "PolygonFactory.h"
+#include "PolygonLineFactory.h"
+#include "PenFactory.h"
 #include "LineFactory.h"
 #include "EllipseFactory.h"
 #include "RectangleFactory.h"
+#include "TextFactory.h"
 #endif
 
 
