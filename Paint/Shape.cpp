@@ -17,7 +17,7 @@ Shape::~Shape()
 	free(points);
 }
 
-void Shape::RecalculateCoordinates(int deltaX, int deltaY,int maxX,int maxY)
+void Shape::RecalculateCoordinates(int deltaX, int deltaY)
 {
 	for (int i = 0; i < pointsCount; i++)
 	{

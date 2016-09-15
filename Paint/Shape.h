@@ -7,7 +7,7 @@ class Shape
 		~Shape();
 		virtual void Draw(HDC,int) = 0;
 		virtual void SetPoint(POINTS);
-		void RecalculateCoordinates(int, int,int,int);
+		void RecalculateCoordinates(int, int);
 	protected:
 		POINT* points;
 		int pointsCount;

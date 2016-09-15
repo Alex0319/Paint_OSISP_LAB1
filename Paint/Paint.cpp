@@ -33,7 +33,7 @@ POINTS startPoint, endPoint;
 bool isCreatePolygon, isFileChanged, isPrintSelected,isMoving;
 int currentShapeId;
 
-// Отправить объявления функций, включенных в этот модуль кода:
+//functions and procedures signatures
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -42,6 +42,7 @@ INT_PTR CALLBACK	WeightChangeDialog(HWND, UINT, WPARAM, LPARAM);
 
 void SetOriginTo(POINT origin);
 
+//application start point
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPTSTR    lpCmdLine,
@@ -50,25 +51,23 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
- 	// TODO: разместите код здесь.
+ 
 	MSG msg;
 	HACCEL hAccelTable;
 	handCursor = LoadCursor(NULL, IDC_HAND);
 	crossCursor = LoadCursor(NULL, IDC_CROSS);
 
-	// Инициализация глобальных строк
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_PAINT, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
-
-	// Выполнить инициализацию приложения:
+	
 	if (!InitInstance (hInstance, nCmdShow))
 		return FALSE;
 
 	SetCursor(crossCursor);
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MAINMENU));
 
-	// Цикл основного сообщения:
+	//main window messages processing cicle
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -80,11 +79,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	return (int) msg.wParam;
 }
 
-//
-//  ФУНКЦИЯ: MyRegisterClass()
-//
-//  НАЗНАЧЕНИЕ: регистрирует класс окна.
-//
+//init and register main window class
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
 	WNDCLASSEX wcex;
@@ -106,16 +101,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassEx(&wcex);
 }
 
-//
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
-//
-//   НАЗНАЧЕНИЕ: сохраняет обработку экземпляра и создает главное окно.
-//
-//   КОММЕНТАРИИ:
-//
-//        В данной функции дескриптор экземпляра сохраняется в глобальной переменной, а также
-//        создается и выводится на экран главное окно программы.
-//
+//creating and initialization main window 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    HWND hWnd;
@@ -133,17 +119,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-//
-//  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  НАЗНАЧЕНИЕ:  обрабатывает сообщения в главном окне.
-//
-//  WM_COMMAND	- обработка меню приложения
-//  WM_PAINT	-Закрасить главное окно
-//  WM_DESTROY	 - ввести сообщение о выходе и вернуться.
-//
-//
 
+//creating and initialization toolbar
 HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 {
 	const int ImageListID = 0;
@@ -194,6 +171,7 @@ HWND CreateToolBar(HWND parent,HINSTANCE hInst)
 	return hWndTB;
 }
 
+//creating and initialization trackbar
 HWND CreateTrackBar(HWND hwndDlg, HINSTANCE hInst)
 {
 	InitCommonControls();
@@ -208,6 +186,7 @@ HWND CreateTrackBar(HWND hwndDlg, HINSTANCE hInst)
 	return hWndTrackBar;
 }
 
+//change current zoom
 void zoomIn(HWND hWnd,float currentZoom)
 {
 	if (((zoom * currentZoom) <= 8) && ((zoom * currentZoom) >= 0.25))
@@ -284,12 +263,14 @@ void InitChooseColorStruct(HWND hWnd)
 	chooseColor[1].rgbResult = penColor;
 }
 
+//standard choose color dialog
 int ChooseColorProc(CHOOSECOLOR chooseColor)
 {
 	if (ChooseColor(&chooseColor))
 		return chooseColor.rgbResult;
 }
 
+//initalization of all application resources
 void InitResource(HWND hWnd)
 {
 	InitOpenFileStruct(hWnd);
@@ -299,7 +280,7 @@ void InitResource(HWND hWnd)
 	hWndToolBar = CreateToolBar(hWnd, hInst);
 	filename = new FileName();
 	filename->SetWindowCaption(hWnd);
-	currentShapeId = 0;
+	currentShapeId = IDM_PEN;
 	origin.x = 0;
 	origin.y = 0;
 	prevOrigin.x = 0;
@@ -310,21 +291,12 @@ void InitResource(HWND hWnd)
 	isMoving = false;
 }
 
-void ResetPointValues(POINTS* startPoint, POINTS* endPoint)
+void ResetPointValues()
 {
-	startPoint->x = 0;
-	startPoint->y = 0;
-	endPoint->x = 0;
-	endPoint->y = 0;
-}
-
-HENHMETAFILE OpenEnhMetaFile(char* name)
-{
-	file.lpstrTitle = _T("Открыть файл для чтения");
-	file.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-	if (!GetOpenFileName(&file))
-		return NULL;
-	return GetEnhMetaFile(name);
+	startPoint.x = 0;
+	startPoint.y = 0;
+	endPoint.x = 0;
+	endPoint.y = 0;
 }
 
 Shape* CreateNewShape(ShapeFactory* shapeFactory)
@@ -341,7 +313,15 @@ void DrawShapes(HDC hdc, int weight)
 		shapes[i]->Draw(hdc, weight);
 }
 
-void RecalculateCoordinates(int maxWidth,int maxHeight)
+void ClearShapesVector()
+{
+	for (int i = 0; i < shapes.size(); i++)
+		delete shapes[i];
+	if (!shapes.empty())
+		std::vector<Shape*>().swap(shapes);
+}
+
+void RecalculateCoordinates()
 {
 	int shapesCount = shapes.size();
 	int deltaX = origin.x - prevOrigin.x;
@@ -351,7 +331,7 @@ void RecalculateCoordinates(int maxWidth,int maxHeight)
 	endPoint.x += deltaX;
 	endPoint.y += deltaY;
 	for (int i = 0; i < shapesCount; i++)
-		shapes[i]->RecalculateCoordinates(deltaX, deltaY,maxWidth,maxHeight);
+		shapes[i]->RecalculateCoordinates(deltaX, deltaY);
 }
 
 void SetOriginTo(POINT newOrigin)
@@ -363,23 +343,30 @@ void SetOriginTo(POINT newOrigin)
 POINTS SetNewPoint(POINTS point)
 {
 	point.x = point.x / zoom;
-	point.y = (point.y -clientRectTop) / zoom;
+	point.y = point.y/ zoom;
 	return point;
 }
 
-HENHMETAFILE SaveEnhanceMetafile(RECT rt,char* newName)
+HENHMETAFILE OpenEnhMetaFile(char* name)
+{
+	file.lpstrTitle = _T("Открыть файл для чтения");
+	file.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+	if (!GetOpenFileName(&file))
+		return NULL;
+	return GetEnhMetaFile(name);
+}
+
+HENHMETAFILE SaveEnhanceMetafile(RECT windowRect, char* newName)
 {
 	char tempName[_MAX_PATH];
 	strcpy_s(tempName, sizeof(tempName), newName);
 	HDC newHdcEMF = CreateEnhMetaFile(NULL, tempName, NULL, NULL);
-	FillRect(newHdcEMF, &rt, WHITE_BRUSH);
-	if (hmf!=NULL)
-		PlayEnhMetaFile(newHdcEMF, hmf, &rt);
+	FillRect(newHdcEMF, &windowRect, WHITE_BRUSH);
+	PlayEnhMetaFile(newHdcEMF, hmf, &windowRect);
 	DrawShapes(newHdcEMF, weight);
 	HENHMETAFILE hmf2 = CloseEnhMetaFile(newHdcEMF);
 	DeleteEnhMetaFile(hmf2);
-	if (hmf!=NULL)
-		DeleteEnhMetaFile(hmf);
+	DeleteEnhMetaFile(hmf);
 	remove(name);
 	rename(tempName, name);
 	return GetEnhMetaFile(name);
@@ -397,23 +384,16 @@ void PrintMetaFile(HWND hWnd, POINTS startPoint, POINTS endPoint, RECT windowRec
 	DeleteEnhMetaFile(CloseEnhMetaFile(tmpHDC));
 }
 
-void ClearShapesVector()
-{
-	for (int i = 0; i < shapes.size(); i++)
-		delete shapes[i];
-	if (!shapes.empty())
-		std::vector<Shape*>().swap(shapes);
-}
-
-void ResetAll(HWND hWnd, int* currentShapeId,bool* isFileChanged)
+void ResetAll(HWND hWnd)
 {
 	ClearShapesVector();
-	*isFileChanged = false;
-	*currentShapeId = 0;
+	isFileChanged = false;
+	isCreatePolygon = false;
+	currentShapeId = 0;
 	InvalidateRect(hWnd, NULL, TRUE);
 }
 
-bool ShowSaveMessageBox(HWND hWnd,bool isFileChanged)
+bool ShowSaveMessageBox(HWND hWnd)
 {
 	TCHAR messageText[256]=_T("");
 	strcpy_s(messageText, sizeof(messageText), filename->GetSaveQuestionString());
@@ -430,12 +410,12 @@ bool ShowSaveMessageBox(HWND hWnd,bool isFileChanged)
 bool ShowSaveFileDialog(char* dialogCaption)
 {
 	file.lpstrTitle = _T(dialogCaption);
-//	file.Flags = OFN_OVERWRITEPROMPT;
 	if (!GetSaveFileName(&file))
 		return false;
 	return true;
 }
 
+//d
 void Drawing(HWND hWnd)
 {
 	RECT windowRect;
@@ -445,6 +425,7 @@ void Drawing(HWND hWnd)
 	int windowWidth = windowRect.right - windowRect.left;//!
 	int windowHeight = windowRect.bottom - windowRect.top;//!
 	int newClientRectTop = clientRectTop / zoom;
+	windowRect.top += newClientRectTop;
 	HDC hdc = GetDC(hWnd);
 	HDC hdc2 = CreateCompatibleDC(hdc);
 	HBITMAP hbm = CreateCompatibleBitmap(hdc, windowWidth, windowHeight);
@@ -459,13 +440,20 @@ void Drawing(HWND hWnd)
 		windowRect.bottom += origin.y;
 		windowRect.top += origin.y;
 		PlayEnhMetaFile(hdc2, hmf, &windowRect);
+		windowRect.right /= zoom;
+		windowRect.bottom /= zoom;
+		windowRect.left -= origin.x;
+		windowRect.right -= origin.x;
+		windowRect.bottom -= origin.y;
+		windowRect.top -= origin.y;
 	}
+	windowRect.top -= newClientRectTop;
 	SetDCPenColor(hdc2, penColor);
 	SetDCBrushColor(hdc2, brushColor);
 	if (isMoving)
-		RecalculateCoordinates(windowWidth,windowHeight);
+		RecalculateCoordinates();
 	DrawShapes(hdc2, weight);
-	if (isCreatePolygon && startPoint.x!=endPoint.x && startPoint.y!=endPoint.y)
+	if (isCreatePolygon)
 	{
 		MoveToEx(hdc2, startPoint.x, startPoint.y, NULL);
 		LineTo(hdc2, endPoint.x, endPoint.y);
@@ -487,7 +475,7 @@ void Drawing(HWND hWnd)
 		SetGraphicsMode(hdc, GM_ADVANCED);
 		SetWorldTransform(hdc, &xForm);
 	}
-	BitBlt(hdc, 0, newClientRectTop+1, windowWidth, windowHeight, hdc2, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, newClientRectTop + 1, windowWidth, windowHeight - newClientRectTop - 1, hdc2, 0, newClientRectTop + 1, SRCCOPY);
 	SelectObject(hdc2, hold);
 	ReleaseDC(hWnd, hdc);
 	DeleteObject(hbm);
@@ -495,6 +483,8 @@ void Drawing(HWND hWnd)
 	ValidateRect(hWnd, &windowRect);
 }
 
+
+//release all application resources
 void FreeResources()
 {
 	DeleteEnhMetaFile(hmf);
@@ -508,10 +498,10 @@ void ExitApplication()
 	PostQuitMessage(0);
 }
 
+//main window messages processer
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
-	HDC hdc;
 	RECT rt;
 
 	switch (message)
@@ -531,18 +521,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			switch (wmId)
 			{
 				case IDM_FILENEW:
-					if (ShowSaveMessageBox(hWnd, isFileChanged))
+					if (ShowSaveMessageBox(hWnd))
 					{
 						if (hmf != NULL)
 							DeleteEnhMetaFile(hmf);
-						ResetAll(hWnd, &currentShapeId, &isFileChanged);
+						ResetAll(hWnd);
 						filename->ResetFileName();
 						filename->SetWindowCaption(hWnd);
 						ZeroMemory(name, sizeof(name));
 					}
 					break;
 				case IDM_FILEOPEN:
-					if (ShowSaveMessageBox(hWnd,isFileChanged))
+					if (ShowSaveMessageBox(hWnd))
 					{
 						HENHMETAFILE newHmf = hmf;
 						if ((newHmf = OpenEnhMetaFile(name)) != NULL)
@@ -550,13 +540,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							hmf = newHmf;
 							filename->SetFileName(name);
 							filename->SetWindowCaption(hWnd);
-							ResetAll(hWnd, &currentShapeId, &isFileChanged);
+							ResetAll(hWnd);
 						}
 						else
+						{
 							DeleteEnhMetaFile(newHmf);
+							DeleteObject(newHmf);
+						}
 					}
 					break;
 				case IDM_FILESAVE:
+					//print or save file
 					GetClientRect(hWnd, &rt);
 					rt.top += clientRectTop;
 					if (isPrintSelected)
@@ -575,7 +569,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						filename->SetFileName(name);
 						filename->SetWindowCaption(hWnd);
 						hmf=SaveEnhanceMetafile(rt,filename->CreateTempFileName(name));
-						isFileChanged = false;
+						isFileChanged = isCreatePolygon = false;
+						ClearShapesVector();
+						ResetPointValues();
 					}
 					break;
 				case IDM_PEN:
@@ -589,7 +585,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					currentShape = NULL;
 					isPrintSelected = false;
 					isCreatePolygon = false;
-					ResetPointValues(&startPoint, &endPoint);
+					ResetPointValues();
 					break;
 				case IDM_PAINTCAN:brushColor = ChooseColorProc(chooseColor[0]);
 					break;
@@ -600,7 +596,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case IDM_PRINT:
 					isPrintSelected = true;
 					isCreatePolygon = false;
-					ResetPointValues(&startPoint, &endPoint);
+					ResetPointValues();
 					currentShapeId = 0;
 					break;
 				case IDM_ABOUT: DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
@@ -611,6 +607,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case WM_LBUTTONDOWN:
+			//create new shape and fix start point of this shape
 			if (isPrintSelected)
 			{
 				startPoint = endPoint = SetNewPoint(MAKEPOINTS(lParam));
@@ -643,8 +640,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				currentMousePos.y = tmpPoint.y;
 				MouseMove(hWnd, mousePos, currentMousePos);
 				mousePos = currentMousePos;
-				break;
 			}
+			break;
 		case WM_LBUTTONUP:
 			if (currentShapeId != 0 && isCreatePolygon)
 			{
@@ -660,7 +657,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case WM_RBUTTONDOWN:					
 			isCreatePolygon = false;
-			ResetPointValues(&startPoint, &endPoint);
+			ResetPointValues();
 			break;
 		case WM_MBUTTONDOWN:
 			{
@@ -678,6 +675,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_MOUSEWHEEL:MouseWheel(hWnd, wParam);
 			break;
 		case WM_CHAR:
+			//add char to input string and draw it
 			if (currentShape!=NULL && currentShapeId == IDM_TEXT)
 			{
 				Text* temp = dynamic_cast<Text*>(currentShape);
@@ -688,7 +686,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_PAINT:	Drawing(hWnd);
 			break;
 		case WM_CLOSE:
-			if (ShowSaveMessageBox(hWnd,isFileChanged))
+			if (ShowSaveMessageBox(hWnd))
 				DestroyWindow(hWnd);
 			break;
 		case WM_DESTROY:ExitApplication();
@@ -698,6 +696,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+//window handler "Weight change"
 INT_PTR CALLBACK WeightChangeDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -707,6 +706,7 @@ INT_PTR CALLBACK WeightChangeDialog(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	static int currentPos=weight;
 	switch (message)
 	{
+		//change current position of trackbar
 		case WM_INITDIALOG:	
 			hWndTrackBar = CreateTrackBar(hDlg, hInst);
 			if (currentPos != weight)
@@ -743,6 +743,7 @@ INT_PTR CALLBACK WeightChangeDialog(HWND hDlg, UINT message, WPARAM wParam, LPAR
 			}
 			InvalidateRect(hDlg, NULL, FALSE);
 			break;
+			//display current position of trackbar
 		case WM_PAINT:
 			{
 				HDC hdc = BeginPaint(hDlg, &ps);
@@ -760,7 +761,7 @@ INT_PTR CALLBACK WeightChangeDialog(HWND hDlg, UINT message, WPARAM wParam, LPAR
 	return (INT_PTR)FALSE;
 }
 
-// Обработчик сообщений для окна "О программе".
+// window handler "About"
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
