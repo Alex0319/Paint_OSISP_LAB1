@@ -5,7 +5,7 @@ class FileName
 		FileName();
 		void SetFileName(char*);
 		char* GetCurrentFileName();
-		char* GetSaveQuestionString();
+		LPCSTR GetSaveQuestionString();
 		char* CreateTempFileName(char* filename);
 		void SetWindowCaption(HWND);
 		void ResetFileName();

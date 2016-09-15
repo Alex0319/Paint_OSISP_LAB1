@@ -1,6 +1,5 @@
 #pragma once
-class Text :
-	public Shape
+class Text :public Shape
 {
 	public:
 		Text();

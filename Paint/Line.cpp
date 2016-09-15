@@ -12,17 +12,24 @@ Line::~Line()
 {
 }
 
+
 void Line::Draw(HDC hdc, int weight)
 {
 	SelectObject(hdc, hPen);
-	MoveToEx(hdc, startPoint.x, startPoint.y, NULL);
-	LineTo(hdc, endPoint.x, endPoint.y);
+	if (pointsCount == 2)
+	{
+		MoveToEx(hdc, points[0].x, points[0].y, NULL);
+		LineTo(hdc, points[1].x, points[1].y);
+	}
 }
 
 void Line::SetPoint(POINTS point)
 {
-	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint =endPoint= point;
+	if (pointsCount == 2)
+	{
+		points[1].x = point.x;
+		points[1].y = point.y;
+	}
 	else
-		endPoint = point;
+		Shape::SetPoint(point);
 }

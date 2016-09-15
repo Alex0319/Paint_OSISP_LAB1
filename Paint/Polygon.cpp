@@ -13,7 +13,6 @@ PolygonShape::PolygonShape(COLORREF color, int weight, COLORREF brushColor) :Sha
 
 PolygonShape::~PolygonShape()
 {
-	free(polygonPoints);
 }
 
 void PolygonShape::SetBrush(HDC hdc)
@@ -46,15 +45,11 @@ void PolygonShape::Draw(HDC hdc,int weight)
 	SetPen(hdc,weight);
 	SelectObject(hdc, hBrush);
 	SelectObject(hdc, hPen);
-	Polygon(hdc, polygonPoints, pointsCount);
+	Polygon(hdc, points, pointsCount);
 }
 
 void PolygonShape::SetPoint(POINTS point)
 {
-	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint =endPoint= point;
-	prevPointsCount = pointsCount++;
-	polygonPoints = (POINT*)realloc(polygonPoints,pointsCount*sizeof(POINT));
-	polygonPoints[pointsCount - 1].x = point.x;
-	polygonPoints[pointsCount - 1].y = point.y;
+	prevPointsCount = pointsCount;
+	Shape::SetPoint(point);
 }

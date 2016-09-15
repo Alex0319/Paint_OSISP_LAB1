@@ -16,13 +16,17 @@ void EllipseShape::Draw(HDC hdc,int weight)
 {
 	SelectObject(hdc, hBrush);
 	SelectObject(hdc, hPen);
-	Ellipse(hdc,startPoint.x,startPoint.y,endPoint.x,endPoint.y);
+	if (pointsCount == 2)
+		Ellipse(hdc, points[0].x, points[0].y, points[1].x, points[1].y);
 }
 
 void EllipseShape::SetPoint(POINTS point)
 {
-	if (startPoint.x == 0 && startPoint.y == 0)
-		startPoint =endPoint= point;
+	if (pointsCount == 2)
+	{
+		points[1].x = point.x;
+		points[1].y = point.y;
+	}
 	else
-		endPoint = point;
+		Shape::SetPoint(point);
 }

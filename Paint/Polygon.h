@@ -9,9 +9,8 @@ class PolygonShape :public Shape
 		void Draw(HDC,int);
 		void SetPoint(POINTS);
 	protected:
-		POINT* polygonPoints;
 		COLORREF polygonPenColor;
-		int pointsCount,prevPointsCount,weight;
+		int prevPointsCount,weight;
 		void SetPen(HDC,int);
 	private:
 		COLORREF polygonBrushColor;

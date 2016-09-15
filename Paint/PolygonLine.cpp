@@ -16,7 +16,7 @@ void PolygonLine::Draw(HDC hdc,int weight)
 {
 	SetPen(hdc,weight);
 	SelectObject(hdc, hPen);
-	Polyline(hdc, polygonPoints, pointsCount);
+	Polyline(hdc, points, pointsCount);
 }
 
 void PolygonLine::SetPoint(POINTS point)

@@ -29,11 +29,11 @@ char* FileName::GetCurrentFileName()
 	return currentFileName;
 }
 
-char* FileName::GetSaveQuestionString()
+LPCSTR FileName::GetSaveQuestionString()
 {
 	_strset_s(currentWindowCaption, _MAX_FNAME + strlen(programName), '\0');
 	sprintf_s(currentWindowCaption, _MAX_FNAME + strlen(programName), "Вы хотите сохранить изменения в файле %s", currentFileName);
-	return currentWindowCaption;
+	return (LPCSTR)currentWindowCaption;
 }
 
 char* FileName::CreateTempFileName(char* fullpath)

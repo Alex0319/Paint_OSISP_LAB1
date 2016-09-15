@@ -15,7 +15,7 @@ Pen::~Pen()
 void Pen::Draw(HDC hdc,int weight)
 {
 	SelectObject(hdc, hPen);
-	Polyline(hdc, polygonPoints, pointsCount);
+	Polyline(hdc, points, pointsCount);
 }
 
 void Pen::SetPoint(POINTS point)
